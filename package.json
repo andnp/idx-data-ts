@@ -1,0 +1,79 @@
+{
+  "name": "idx-data",
+  "version": "0.0.0",
+  "description": "An idx binary data format loader.",
+  "main": "dist/src/index.js",
+  "types": "dist/src/index.d.ts",
+  "scripts": {
+    "commitmsg": "commitlint -e $GIT_PARAMS",
+    "lint": "tslint --config tslint.json --project . --format stylish",
+    "test": "jest",
+    "tsc": "tsc",
+    "prepush": "npm run -s lint && npm test",
+    "release": "rm -rf dist && npm run tsc && npx semantic-release"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testMatch": [
+      "**/tests/**/*.test.ts?(x)"
+    ],
+    "moduleDirectories": [
+      "node_modules",
+      "./src"
+    ],
+    "moduleFileExtensions": [
+      "js",
+      "ts"
+    ],
+    "collectCoverage": true,
+    "testEnvironment": "node"
+  },
+  "devDependencies": {
+    "@commitlint/config-conventional": "^7.0.0",
+    "@types/jest": "~23.3.1",
+    "@types/node": "^10.3.5",
+    "commitlint": "^7.0.0",
+    "husky": "^0.14.3",
+    "jest": "^23.3.0",
+    "ts-jest": "^23.0.0",
+    "ts-node": "^7.0.0",
+    "tslint": "^5.9.1",
+    "typescript": "~2.8.1",
+    "utilities-ts": "git+https://github.com/andnp/utilities-ts.git"
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
+  },
+  "release": {
+    "branch": "master"
+  },
+  "dependencies": {
+    "@types/mkdirp": "^0.5.2",
+    "mkdirp": "^0.5.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/andnp/idx-data-ts.git"
+  },
+  "keywords": [
+    "typescript",
+    "machine learning",
+    "idx",
+    "mnist",
+    "data format"
+  ],
+  "author": "Andy Patterson",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/andnp/idx-data-ts/issues"
+  },
+  "homepage": "https://github.com/andnp/idx-data-ts#readme",
+  "files": [
+    "dist/src/",
+    "src/"
+  ]
+}
