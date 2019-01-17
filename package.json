@@ -7,7 +7,7 @@
   "scripts": {
     "commitmsg": "commitlint -e $GIT_PARAMS",
     "lint": "tslint --config tslint.json --project . --format stylish",
-    "test": "jest",
+    "test": "npm run tsc && jest",
     "tsc": "tsc",
     "prepush": "npm run -s lint && npm test",
     "release": "rm -rf dist && npm run tsc && npx semantic-release"
@@ -40,7 +40,7 @@
     "ts-jest": "^23.0.0",
     "ts-node": "^7.0.0",
     "tslint": "^5.9.1",
-    "typescript": "~2.8.1",
+    "typescript": "~3.2.2",
     "utilities-ts": "git+https://github.com/andnp/utilities-ts.git"
   },
   "commitlint": {
