@@ -1,7 +1,8 @@
 import * as fs from 'fs';
 import { createFolder, assertNever, BufferType } from './utils';
 
-type BufferTypeString = 'float32' | 'int32' | 'uint8';
+export { BufferType } from './utils';
+export type BufferTypeString = 'float32' | 'int32' | 'uint8';
 
 const getBufferTypeString = (b: BufferType): BufferTypeString => {
     if (b instanceof Float32Array) return 'float32';
