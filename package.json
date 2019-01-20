@@ -5,6 +5,7 @@
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
   "scripts": {
+    "build": "tsc",
     "commitmsg": "commitlint -e $GIT_PARAMS",
     "lint": "tslint --config tslint.json --project . --format stylish",
     "test": "npm run tsc && jest",
@@ -73,7 +74,6 @@
   },
   "homepage": "https://github.com/andnp/idx-data-ts#readme",
   "files": [
-    "dist/src/",
-    "src/"
+    "dist/src/"
   ]
 }
