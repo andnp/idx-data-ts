@@ -36,6 +36,23 @@ const getBufferSizeOffset = (b: number) => {
     throw new Error('Unexpected buffer type received');
 };
 
+const buildBatch = (start: number, end: number, bufferType: BufferTypeString, data: BufferType) => {
+    const enc = getBufferEncoding(bufferType);
+    const sizeOffset = getBufferSizeOffset(enc);
+
+    // safeguard to make sure we don't request too much data
+    end = end >= data.length ? data.length : end;
+
+    const buf = Buffer.alloc((end - start) * sizeOffset, 0);
+    for (let i = start; i < end; ++i) {
+        if (bufferType === 'float32') buf.writeFloatBE(data[i], i * sizeOffset);
+        else if (bufferType === 'int32') buf.writeInt32BE(data[i], i * sizeOffset);
+        else if (bufferType === 'uint8') buf.writeUInt8(data[i], i * sizeOffset);
+    }
+
+    return buf;
+};
+
 export async function saveBits(data: BufferType, shape: number[], file: string) {
     await createFolder(file);
     const stream = fs.createWriteStream(file, "binary");
@@ -60,16 +77,11 @@ export async function saveBits(data: BufferType, shape: number[], file: string) 
     stream.write(header);
 
     // write the data to the file
-    const enc = getBufferEncoding(bufferType);
-    const sizeOffset = getBufferSizeOffset(enc);
-    const buf = Buffer.alloc(data.length * sizeOffset, 0);
-    for (let i = 0; i < data.length; ++i) {
-        if (bufferType === 'float32') buf.writeFloatBE(data[i], i * sizeOffset);
-        else if (bufferType === 'int32') buf.writeInt32BE(data[i], i * sizeOffset);
-        else if (bufferType === 'uint8') buf.writeUInt8(data[i], i * sizeOffset);
+    const batchSize = 1024;
+    for (let i = 0; i < data.length / batchSize; i++) {
+        const batch = buildBatch(i * batchSize, (i + 1) * batchSize, bufferType, data);
+        stream.write(batch);
     }
-
-    stream.write(buf);
 
     stream.close();
 
