@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import { createFolder, assertNever, BufferType } from './utils';
+import { Writable, Readable } from 'stream';
 
 export { BufferType } from './utils';
 export type BufferTypeString = 'float32' | 'int32' | 'uint8';
@@ -53,10 +54,15 @@ const buildBatch = (start: number, end: number, bufferType: BufferTypeString, da
     return buf;
 };
 
-export async function saveBits(data: BufferType, shape: number[], file: string) {
-    await createFolder(file);
-    const stream = fs.createWriteStream(file, "binary");
-
+/**
+ * @param data A TypedArray containing the data to be written
+ * @param shape The shape of the matrix, each element specifying the size of the corresponding dimension
+ * @param stream A writable stream that the data (including the header) will be written to.
+ *
+ * Writes raw bytes in big endian mode to the writable stream, starting with the idx header.
+ * Writing occurs in batches to reduce memory consumption.
+ */
+export function writeToStream(data: BufferType, shape: number[], stream: Writable) {
     const bufferType = getBufferTypeString(data);
 
     const headerSize = 4 + shape.length * 4;
@@ -82,6 +88,21 @@ export async function saveBits(data: BufferType, shape: number[], file: string) 
         const batch = buildBatch(i * batchSize, (i + 1) * batchSize, bufferType, data);
         stream.write(batch);
     }
+}
+
+/**
+ * @param data A TypedArray containing the data to be written
+ * @param shape The shape of the matrix, each element specifying the size of the corresponding dimension
+ * @param file The filepath that the data will be written to
+ *
+ * Writes the TypedArray data to file in the IDX format.
+ * Recursively creates the folder path if necessary.
+ */
+export async function saveBits(data: BufferType, shape: number[], file: string) {
+    await createFolder(file);
+    const stream = fs.createWriteStream(file, "binary");
+
+    writeToStream(data, shape, stream);
 
     stream.close();
 
@@ -94,8 +115,12 @@ export interface IdxTensor {
     type: BufferTypeString;
 }
 
-export function loadBits(file: string): Promise<IdxTensor> {
-    const stream = fs.createReadStream(file);
+/**
+ * @param stream The stream where the data will be sent
+ *
+ * Listens to the stream and saves incoming data to a TypedArray.
+ */
+export function readFromStream(stream: Readable): Promise<IdxTensor> {
     let data: BufferType | undefined;
     let type: number;
     let dims: number;
@@ -144,4 +169,15 @@ export function loadBits(file: string): Promise<IdxTensor> {
             resolve(tensor);
         });
     });
+}
+
+/**
+ *
+ * @param file Filepath that will be read from
+ *
+ * Reads from an IDX formatted binary file into a TypedArray.
+ */
+export function loadBits(file: string): Promise<IdxTensor> {
+    const stream = fs.createReadStream(file);
+    return readFromStream(stream);
 }
