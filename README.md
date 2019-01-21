@@ -128,3 +128,23 @@ Will write something like:
 0x00 0x00 0x00 0x00
 */
 ```
+
+#### readFromStream
+Takes a stream and parses the idx formatted data.
+`loadBits` is simply a wrapper over this method using `fs.createReadStream`.
+
+```typescript
+export function loadBits(file: string) {
+    const stream = fs.createReadStream(file);
+    return readFromStream(stream);
+}
+```
+
+#### writeToStream
+Takes the raw tensor data and a writable stream and writes the tensor in IDX format to the stream (including the header information).
+`saveBits` is a wrapper over this method using `fs.createWriteStream`.
+```typescript
+const stream = fs.createWriteStream('merp.idx', 'binary');
+writeToStream(stream);
+stream.close();
+```
