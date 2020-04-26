@@ -1,6 +1,6 @@
 # idx-data
 
-[![Greenkeeper badge](https://badges.greenkeeper.io/andnp/idx-data-ts.svg)](https://greenkeeper.io/)
+
 
 This is a tiny `node.js` module for reading/writing idx formatted binary data from/to the disk.
 More information on the idx file format can be find [here](http://www.fon.hum.uva.nl/praat/manual/IDX_file_format.html) and [here](http://yann.lecun.com/exdb/mnist/).
